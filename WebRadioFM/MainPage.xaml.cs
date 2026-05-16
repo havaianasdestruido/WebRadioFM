@@ -17,7 +17,6 @@ namespace WebRadioFM
         private Track _currentScrobbledTrack;
         private DateTime _playStartTime;
         private bool _scrobblePending;
-        private bool _hasStartedPlaying;
 
         public MainPage()
         {
@@ -151,12 +150,14 @@ namespace WebRadioFM
 
             _currentScrobbledTrack = null;
             _scrobblePending = false;
-            _hasStartedPlaying = false;
+            _playStartTime = DateTime.Now;
 
             if (!_progressTimer.IsEnabled)
             {
                 _progressTimer.Start();
             }
+
+            SendNowPlaying(track);
 
             UpdateScrobbleStatus();
         }
@@ -167,17 +168,46 @@ namespace WebRadioFM
             {
                 ((ApplicationBarIconButton)appBarPlayPause).IconUri = new Uri("/Assets/appbar.transport.pause.png", UriKind.Relative);
                 _progressTimer.Start();
-
-                if (!_hasStartedPlaying)
-                {
-                    _hasStartedPlaying = true;
-                    _playStartTime = DateTime.Now;
-                }
             }
             else
             {
                 ((ApplicationBarIconButton)appBarPlayPause).IconUri = new Uri("/Assets/appbar.transport.play.png", UriKind.Relative);
             }
+        }
+
+        private void SendNowPlaying(Track track)
+        {
+            if (!App.LastFm.IsAuthenticated)
+                return;
+
+            bool scrobblingEnabled = false;
+            if (IsolatedStorageSettings.ApplicationSettings.Contains("LastFmScrobblingEnabled"))
+            {
+                scrobblingEnabled = (bool)IsolatedStorageSettings.ApplicationSettings["LastFmScrobblingEnabled"];
+            }
+
+            if (!scrobblingEnabled)
+                return;
+
+            App.LastFm.UpdateNowPlayingAsync(
+                track.Artist,
+                track.Title,
+                track.Album,
+                (int)track.Duration.TotalSeconds,
+                () =>
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        scrobbleStatusText.Text = "Now Playing on Last.fm";
+                    });
+                },
+                (error) =>
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        scrobbleStatusText.Text = "";
+                    });
+                });
         }
 
         private void CheckScrobble()
@@ -192,6 +222,9 @@ namespace WebRadioFM
             }
 
             if (!scrobblingEnabled)
+                return;
+
+            if (_scrobblePending)
                 return;
 
             Track currentTrack = _player.CurrentTrack;
@@ -227,25 +260,9 @@ namespace WebRadioFM
                         Deployment.Current.Dispatcher.BeginInvoke(() =>
                         {
                             scrobbleStatusText.Text = "Scrobble failed";
+                            _scrobblePending = false;
                         });
                     });
-            }
-
-            if (!_scrobblePending)
-            {
-                App.LastFm.UpdateNowPlayingAsync(
-                    currentTrack.Artist,
-                    currentTrack.Title,
-                    currentTrack.Album,
-                    (int)currentTrack.Duration.TotalSeconds,
-                    () =>
-                    {
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            scrobbleStatusText.Text = "Now Playing on Last.fm";
-                        });
-                    },
-                    (error) => { });
             }
         }
 

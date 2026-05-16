@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -18,6 +19,8 @@ namespace WebRadioFM.Services
         private string _apiKey;
         private string _apiSecret;
         private LastFmSession _session;
+        private int _activeRequests;
+        private readonly object _requestLock = new object();
 
         public LastFmSession Session
         {
@@ -44,6 +47,7 @@ namespace WebRadioFM.Services
         public LastFMService()
         {
             _session = new LastFmSession();
+            _activeRequests = 0;
         }
 
         public void Configure(string apiKey, string apiSecret)
@@ -71,6 +75,14 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "GET", null, (json) =>
             {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
                 string token = ParseToken(json);
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -100,7 +112,15 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "GET", null, (json) =>
             {
-                var session = ParseSession(json, token);
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
+                var session = ParseSession(json);
                 if (session != null && session.IsAuthenticated)
                 {
                     _session = session;
@@ -146,6 +166,13 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "POST", parameters, (json) =>
             {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
                 if (callback != null)
                     callback();
             }, errorCallback);
@@ -182,6 +209,13 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "POST", parameters, (json) =>
             {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
                 if (callback != null)
                     callback();
             }, errorCallback);
@@ -211,6 +245,13 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "POST", parameters, (json) =>
             {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
                 if (callback != null)
                     callback();
             }, errorCallback);
@@ -240,6 +281,13 @@ namespace WebRadioFM.Services
             string url = BuildRequestUrl(parameters);
             MakeRequest(url, "POST", parameters, (json) =>
             {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
                 if (callback != null)
                     callback();
             }, errorCallback);
@@ -314,10 +362,35 @@ namespace WebRadioFM.Services
 
         private void MakeRequest(string url, string method, Dictionary<string, string> postData, Action<string> callback, Action<string> errorCallback)
         {
+            lock (_requestLock)
+            {
+                if (_activeRequests >= 4)
+                {
+                    if (errorCallback != null)
+                        Deployment.Current.Dispatcher.BeginInvoke(() => errorCallback("Too many concurrent requests"));
+                    return;
+                }
+                _activeRequests++;
+            }
+
             var request = HttpWebRequest.Create(url) as HttpWebRequest;
             request.UserAgent = "WebRadioFM/1.0";
             request.Method = method;
             request.Accept = "application/json";
+
+            var state = new RequestState
+            {
+                Request = request,
+                Callback = callback,
+                ErrorCallback = errorCallback,
+                OnComplete = () =>
+                {
+                    lock (_requestLock)
+                    {
+                        _activeRequests--;
+                    }
+                }
+            };
 
             if (method == "POST" && postData != null)
             {
@@ -345,10 +418,11 @@ namespace WebRadioFM.Services
                         {
                             stream.Write(data, 0, data.Length);
                         }
-                        request.BeginGetResponse(HandleResponse, new RequestState { Request = request, Callback = callback, ErrorCallback = errorCallback });
+                        request.BeginGetResponse(HandleResponse, state);
                     }
                     catch (Exception ex)
                     {
+                        state.OnComplete();
                         if (errorCallback != null)
                             Deployment.Current.Dispatcher.BeginInvoke(() => errorCallback(ex.Message));
                     }
@@ -356,7 +430,7 @@ namespace WebRadioFM.Services
             }
             else
             {
-                request.BeginGetResponse(HandleResponse, new RequestState { Request = request, Callback = callback, ErrorCallback = errorCallback });
+                request.BeginGetResponse(HandleResponse, state);
             }
         }
 
@@ -370,15 +444,56 @@ namespace WebRadioFM.Services
                 using (var reader = new StreamReader(stream))
                 {
                     string json = reader.ReadToEnd();
+                    state.OnComplete();
                     if (state.Callback != null)
                         Deployment.Current.Dispatcher.BeginInvoke(() => state.Callback(json));
                 }
             }
+            catch (WebException webEx)
+            {
+                state.OnComplete();
+                string errorMsg = "Network error: " + webEx.Message;
+
+                try
+                {
+                    using (var stream = webEx.Response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        string json = reader.ReadToEnd();
+                        string apiError = GetErrorFromJson(json);
+                        if (apiError != null)
+                            errorMsg = apiError;
+                    }
+                }
+                catch { }
+
+                if (state.ErrorCallback != null)
+                    Deployment.Current.Dispatcher.BeginInvoke(() => state.ErrorCallback(errorMsg));
+            }
             catch (Exception ex)
             {
+                state.OnComplete();
                 if (state.ErrorCallback != null)
-                    Deployment.Current.Dispatcher.BeginInvoke(() => state.ErrorCallback(ex.Message));
+                    Deployment.Current.Dispatcher.BeginInvoke(() => state.ErrorCallback("Request failed: " + ex.Message));
             }
+        }
+
+        private string GetErrorFromJson(string json)
+        {
+            try
+            {
+                var serializer = new DataContractJsonSerializer(typeof(ErrorResponse));
+                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    var error = serializer.ReadObject(ms) as ErrorResponse;
+                    if (error != null && error.error != 0)
+                    {
+                        return string.Format("Last.fm error {0}: {1}", error.error, error.message);
+                    }
+                }
+            }
+            catch { }
+            return null;
         }
 
         private string ParseToken(string json)
@@ -395,11 +510,11 @@ namespace WebRadioFM.Services
                     }
                 }
             }
-            catch (Exception) { }
+            catch { }
             return null;
         }
 
-        private LastFmSession ParseSession(string json, string token)
+        private LastFmSession ParseSession(string json)
         {
             try
             {
@@ -407,7 +522,7 @@ namespace WebRadioFM.Services
                 using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
                 {
                     var response = serializer.ReadObject(ms) as SessionResponse;
-                    if (response != null && response.session != null)
+                    if (response != null && response.session != null && !string.IsNullOrEmpty(response.session.key))
                     {
                         return new LastFmSession
                         {
@@ -417,21 +532,7 @@ namespace WebRadioFM.Services
                     }
                 }
             }
-            catch (Exception) { }
-
-            try
-            {
-                var errorSerializer = new DataContractJsonSerializer(typeof(ErrorResponse));
-                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
-                {
-                    var error = errorSerializer.ReadObject(ms) as ErrorResponse;
-                    if (error != null)
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception) { }
+            catch { }
 
             return null;
         }
@@ -448,6 +549,7 @@ namespace WebRadioFM.Services
             public HttpWebRequest Request { get; set; }
             public Action<string> Callback { get; set; }
             public Action<string> ErrorCallback { get; set; }
+            public Action OnComplete { get; set; }
         }
     }
 }
