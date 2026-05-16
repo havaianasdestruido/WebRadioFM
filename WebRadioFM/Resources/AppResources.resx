@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ResourceFlowDirection" xml:space="preserve">
+    <value>LeftToRight</value>
+  </data>
+  <data name="ResourceLanguage" xml:space="preserve">
+    <value>en-US</value>
+  </data>
+  <data name="ApplicationTitle" xml:space="preserve">
+    <value>WebRadio.FM</value>
+  </data>
+  <data name="MainTitle" xml:space="preserve">
+    <value>now playing</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="AppBarPlay" xml:space="preserve">
+    <value>play</value>
+  </data>
+  <data name="AppBarPause" xml:space="preserve">
+    <value>pause</value>
+  </data>
+  <data name="AppBarNext" xml:space="preserve">
+    <value>next</value>
+  </data>
+  <data name="AppBarPrev" xml:space="preserve">
+    <value>previous</value>
+  </data>
+  <data name="AppBarShuffle" xml:space="preserve">
+    <value>shuffle</value>
+  </data>
+  <data name="AppBarSettings" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="NoTracksMessage" xml:space="preserve">
+    <value>No music found in your library</value>
+  </data>
+  <data name="LastFmSettingsHeader" xml:space="preserve">
+    <value>Last.fm Scrobbling</value>
+  </data>
+  <data name="LastFmApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="LastFmApiSecretLabel" xml:space="preserve">
+    <value>API Secret</value>
+  </data>
+  <data name="LastFmLoginButton" xml:space="preserve">
+    <value>Connect to Last.fm</value>
+  </data>
+  <data name="LastFmLogoutButton" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="LastFmAuthenticated" xml:space="preserve">
+    <value>Connected as {0}</value>
+  </data>
+  <data name="LastFmNotAuthenticated" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="LastFmScrobblingEnabled" xml:space="preserve">
+    <value>Enable scrobbling</value>
+  </data>
+</root>

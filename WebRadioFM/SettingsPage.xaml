@@ -1,0 +1,75 @@
+<phone:PhoneApplicationPage
+    x:Class="WebRadioFM.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="WEBRADIO.FM" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
+            <TextBlock Text="settings" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Margin="12,0,12,0">
+            <StackPanel>
+
+                <TextBlock Text="Last.fm Scrobbling" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,12"/>
+
+                <TextBlock x:Name="authStatusText" Text="Not connected" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" Margin="0,0,0,12"/>
+
+                <TextBlock Text="API Key" Style="{StaticResource PhoneTextNormalStyle}"/>
+                <TextBox x:Name="apiKeyTextBox" InputScope="Url" PlaceholderText="Enter your Last.fm API key"/>
+
+                <TextBlock Text="API Secret" Style="{StaticResource PhoneTextNormalStyle}"/>
+                <PasswordBox x:Name="apiSecretPasswordBox"/>
+
+                <TextBlock Text="Token" Style="{StaticResource PhoneTextNormalStyle}"/>
+                <TextBox x:Name="tokenTextBox" InputScope="Url" PlaceholderText="Paste token from Last.fm"/>
+
+                <Grid Margin="0,12,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="getTokenButton" Content="1. Get Token" Click="GetToken_Click" Grid.Column="0" Margin="0,0,6,0"/>
+                    <Button x:Name="authButton" Content="2. Authorize" Click="Authorize_Click" Grid.Column="1" Margin="6,0,0,0" IsEnabled="False"/>
+                </Grid>
+
+                <Button x:Name="connectButton" Content="3. Connect" Click="Connect_Click" IsEnabled="False"/>
+
+                <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,12"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,12">
+                    <TextBlock Text="Enable scrobbling" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="scrobblingCheckBox" Checked="ScrobblingCheckChanged" Unchecked="ScrobblingCheckChanged" Margin="12,0,0,0"/>
+                </StackPanel>
+
+                <Button x:Name="logoutButton" Content="Disconnect" Click="Logout_Click"/>
+
+                <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,12"/>
+
+                <TextBlock Text="About" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,12"/>
+                <TextBlock Text="WebRadio.FM v1.0" Style="{StaticResource PhoneTextNormalStyle}"/>
+                <TextBlock Text="Windows Phone 8.1 music player with Last.fm scrobbling integration." Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap" Margin="0,6,0,12"/>
+                <TextBlock Text="How to connect:" Style="{StaticResource PhoneTextLargeStyle}" Margin="0,6,0,6"/>
+                <TextBlock Text="1. Get a Last.fm API key at https://www.last.fm/api/account/create&#x0a;2. Enter your API key and secret&#x0a;3. Tap 'Get Token' to get a request token&#x0a;4. Tap 'Authorize' to open the browser and authorize the app&#x0a;5. Copy the token from step 3, paste it into the Token field&#x0a;6. Tap 'Connect' to complete authentication" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+
+</phone:PhoneApplicationPage>

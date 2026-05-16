@@ -1,0 +1,96 @@
+<phone:PhoneApplicationPage
+    x:Class="WebRadioFM.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton x:Name="appBarPlayPause" IconUri="/Assets/appbar.transport.play.png" Text="play" Click="PlayPause_Click"/>
+            <shell:ApplicationBarIconButton x:Name="appBarNext" IconUri="/Assets/appbar.transport.ff.png" Text="next" Click="Next_Click"/>
+            <shell:ApplicationBarIconButton x:Name="appBarPrev" IconUri="/Assets/appbar.transport.rew.png" Text="previous" Click="Previous_Click"/>
+            <shell:ApplicationBarIconButton x:Name="appBarShuffle" IconUri="/Assets/appbar.shuffle.png" Text="shuffle" Click="Shuffle_Click"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem x:Name="menuSettings" Text="settings" Click="Settings_Click"/>
+                <shell:ApplicationBarMenuItem x:Name="menuNowPlayingInfo" Text="track info" Click="TrackInfo_Click"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="WEBRADIO.FM" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
+            <TextBlock Text="now playing" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer x:Name="playlistScrollViewer" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                <ListBox x:Name="playlistListBox" ItemsSource="{Binding}" SelectionChanged="PlaylistSelectionChanged" Margin="0,0,0,12">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,6,0,6">
+                                <TextBlock Text="{Binding DisplayText}" Style="{StaticResource PhoneTextLargeStyle}" TextWrapping="NoWrap"/>
+                                <TextBlock Text="{Binding Album}" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="NoWrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+
+            <Rectangle Grid.Row="1" Fill="{StaticResource PhoneAccentBrush}" Height="2" Margin="0,6,0,6"/>
+
+            <StackPanel Grid.Row="2" Margin="0,0,0,6">
+                <TextBlock x:Name="nowPlayingTitle" Text="No track selected" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="NoWrap"/>
+                <TextBlock x:Name="nowPlayingArtist" Text="" Style="{StaticResource PhoneTextLargeStyle}" TextWrapping="NoWrap"/>
+                <TextBlock x:Name="nowPlayingAlbum" Text="" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="NoWrap"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="3" Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="currentPositionText" Text="0:00" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Center"/>
+                    <Slider x:Name="progressSlider" Grid.Column="1" Minimum="0" Maximum="1" Value="0" Margin="6,0" IsHitTestVisible="False"/>
+                    <TextBlock x:Name="totalDurationText" Grid.Column="2" Text="0:00" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="trackCountText" Text="0 tracks" Style="{StaticResource PhoneTextSubtleStyle}" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="scrobbleStatusText" Grid.Column="1" Text="" Style="{StaticResource PhoneTextSubtleStyle}" HorizontalAlignment="Right"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+
+</phone:PhoneApplicationPage>
