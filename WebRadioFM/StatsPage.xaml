@@ -30,8 +30,8 @@
             <TextBlock Text="scrobble stats" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
-        <Pivot x:Name="statsPivot" Grid.Row="1" Title="">
-            <PivotItem Header="recent">
+        <phone:Pivot x:Name="statsPivot" Grid.Row="1" Title="">
+            <phone:PivotItem Header="recent">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
                         <ListBox x:Name="recentTracksList" ItemsSource="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
@@ -51,9 +51,9 @@
                         </ListBox>
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
+            </phone:PivotItem>
 
-            <PivotItem Header="top artists">
+            <phone:PivotItem Header="top artists">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
@@ -74,9 +74,9 @@
                         </ListBox>
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
+            </phone:PivotItem>
 
-            <PivotItem Header="top tracks">
+            <phone:PivotItem Header="top tracks">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
@@ -98,8 +98,8 @@
                         </ListBox>
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
-        </Pivot>
+            </phone:PivotItem>
+        </phone:Pivot>
     </Grid>
 
 </phone:PhoneApplicationPage>

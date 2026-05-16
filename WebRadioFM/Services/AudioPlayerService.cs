@@ -110,14 +110,20 @@ namespace WebRadioFM.Services
 
                     try
                     {
-                        if (song.Album != null && song.Album.Art != null)
+                        var artProp = song.Album?.GetType().GetProperty("Art");
+                        if (artProp != null)
                         {
-                            using (var stream = song.Album.Art.GetImage())
+                            var albumArt = artProp.GetValue(song.Album, null);
+                            var getImageMethod = albumArt?.GetType().GetMethod("GetImage");
+                            if (getImageMethod != null)
                             {
-                                if (stream != null)
+                                using (var stream = getImageMethod.Invoke(albumArt, null) as System.IO.Stream)
                                 {
-                                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                                    bitmap.SetSource(stream);
+                                    if (stream != null)
+                                    {
+                                        var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                                        bitmap.SetSource(stream);
+                                    }
                                 }
                             }
                         }

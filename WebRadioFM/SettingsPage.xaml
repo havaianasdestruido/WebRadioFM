@@ -21,26 +21,26 @@
             <TextBlock Text="settings" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
-        <Pivot Grid.Row="1" Title="">
-            <PivotItem Header="scrobbling">
+        <phone:Pivot Grid.Row="1" Title="">
+            <phone:PivotItem Header="scrobbling">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
 
                         <TextBlock Text="Accounts" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
                         <StackPanel x:Name="accountPanel">
                             <TextBlock x:Name="authStatusText" Text="Not connected" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" Margin="0,0,0,6"/>
-                            <TextBox x:Name="apiKeyTextBox" InputScope="Url" PlaceholderText="API Key"/>
+                            <TextBox x:Name="apiKeyTextBox" InputScope="Url"/>
                             <PasswordBox x:Name="apiSecretPasswordBox"/>
-                            <TextBox x:Name="tokenTextBox" InputScope="Url" PlaceholderText="Paste token after authorizing"/>
+                            <TextBox x:Name="tokenTextBox" InputScope="Url"/>
                             <Grid Margin="0,6,0,6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Content="get token" Click="GetToken_Click" Grid.Column="0" Margin="0,0,3,0"/>
-                                <Button Content="authorize" Click="Authorize_Click" Grid.Column="1" Margin="3,0,3,0" IsEnabled="False"/>
-                                <Button Content="connect" Click="Connect_Click" Grid.Column="2" Margin="3,0,0,0" IsEnabled="False"/>
+                                <Button x:Name="getTokenButton" Content="get token" Click="GetToken_Click" Grid.Column="0" Margin="0,0,3,0"/>
+                                <Button x:Name="authButton" Content="authorize" Click="Authorize_Click" Grid.Column="1" Margin="3,0,3,0" IsEnabled="False"/>
+                                <Button x:Name="connectButton" Content="connect" Click="Connect_Click" Grid.Column="2" Margin="3,0,0,0" IsEnabled="False"/>
                             </Grid>
                             <Button x:Name="logoutButton" Content="disconnect" Click="Logout_Click"/>
                         </StackPanel>
@@ -85,28 +85,28 @@
 
                         <TextBlock Text="Blocked Metadata" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
                         <TextBlock Text="Tracks matching these strings won't scrobble" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
-                        <TextBox x:Name="blockedTracksBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="One per line: artist - track"/>
+                            <TextBox x:Name="blockedTracksBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100"/>
                         <Button Content="save blocked" Click="SaveBlocked_Click" Margin="0,6,0,12"/>
 
                         <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
 
                         <TextBlock Text="Metadata Edits" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
                         <TextBlock Text="Simple find/replace (field:pattern:replacement)" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
-                        <TextBox x:Name="simpleEditsBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="title:(feat.)-(feat.)&#x0a;artist:The - The"/>
+                            <TextBox x:Name="simpleEditsBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100"/>
                         <Button Content="save edits" Click="SaveEdits_Click" Margin="0,6,0,12"/>
 
                         <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
 
                         <TextBlock Text="Regex Rules" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
                         <TextBlock Text="Regex replacement (field:pattern:replacement)" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
-                        <TextBox x:Name="regexRulesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="all:\s*-\s*: - "/>
+                            <TextBox x:Name="regexRulesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100"/>
                         <Button Content="save regex" Click="SaveRegex_Click" Margin="0,6,0,12"/>
 
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
+            </phone:PivotItem>
 
-            <PivotItem Header="appearance">
+            <phone:PivotItem Header="appearance">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
 
@@ -126,9 +126,9 @@
 
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
+            </phone:PivotItem>
 
-            <PivotItem Header="about">
+            <phone:PivotItem Header="about">
                 <ScrollViewer>
                     <StackPanel Margin="12,0,12,0">
                         <TextBlock Text="WebRadio.FM" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,6"/>
@@ -145,8 +145,8 @@
                         <Button Content="visit stats page" Click="Stats_Click" Margin="0,6,0,12"/>
                     </StackPanel>
                 </ScrollViewer>
-            </PivotItem>
-        </Pivot>
+            </phone:PivotItem>
+        </phone:Pivot>
     </Grid>
 
 </phone:PhoneApplicationPage>

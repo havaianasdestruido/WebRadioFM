@@ -170,6 +170,54 @@ namespace WebRadioFM.Models
     }
 
     [DataContract]
+    public class TrackInfoResponse
+    {
+        [DataMember(Name = "track")]
+        public TrackInfoData track { get; set; }
+    }
+
+    [DataContract]
+    public class TrackInfoData
+    {
+        [DataMember(Name = "name")]
+        public string name { get; set; }
+
+        [DataMember(Name = "duration")]
+        public string duration { get; set; }
+
+        [DataMember(Name = "mbid")]
+        public string mbid { get; set; }
+
+        [DataMember(Name = "url")]
+        public string url { get; set; }
+
+        [DataMember(Name = "artist")]
+        public StatsArtist artist { get; set; }
+
+        [DataMember(Name = "album")]
+        public TrackAlbum album { get; set; }
+    }
+
+    [DataContract]
+    public class TrackAlbum
+    {
+        [DataMember(Name = "artist")]
+        public string artist { get; set; }
+
+        [DataMember(Name = "title")]
+        public string title { get; set; }
+
+        [DataMember(Name = "mbid")]
+        public string mbid { get; set; }
+
+        [DataMember(Name = "url")]
+        public string url { get; set; }
+
+        [DataMember(Name = "image")]
+        public List<StatsImage> image { get; set; }
+    }
+
+    [DataContract]
     public class TopTrackItem
     {
         [DataMember(Name = "name")]

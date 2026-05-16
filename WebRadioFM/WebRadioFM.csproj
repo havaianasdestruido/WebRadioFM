@@ -214,5 +214,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
+
+  <!-- Missing targets for VS 2022 MSBuild compatibility (WP 8.1 SDK not installed) -->
+  <Target Name="_GetRecursiveResolvedSDKReferences" />
+  <Target Name="ValidateWMAppManifest" DependsOnTargets="WMAppManifestWinMDRegistration" />
   <ProjectExtensions />
 </Project>
