@@ -180,6 +180,42 @@ if ($Clean) {
     return
 }
 
+# --- Patch XAP helper ---
+function Patch-XAP {
+    param([string]$XapPath)
+    Write-Host "  Patching $XapPath for WP 8.0 compat..." -ForegroundColor Gray
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $tempDir = Join-Path $env:TEMP ([System.Guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+    try {
+        # Extract, patch, and repack
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($XapPath, $tempDir)
+        # Patch WMAppManifest.xml
+        $wm = "$tempDir\WMAppManifest.xml"
+        if (Test-Path $wm) {
+            $content = Get-Content $wm -Raw
+            $content = $content -replace 'AppPlatformVersion="8\.1"', 'AppPlatformVersion="8.0"'
+            Set-Content -Path $wm -Value $content -NoNewline
+        }
+        # Patch AppManifest.xaml
+        $am = "$tempDir\AppManifest.xaml"
+        if (Test-Path $am) {
+            $content = Get-Content $am -Raw
+            $content = $content -replace 'RuntimeVersion="6\.7\.50308\.0"', 'RuntimeVersion="4.7.50308.0"'
+            Set-Content -Path $am -Value $content -NoNewline
+        }
+        # Remove MDILProjectFiles.xml (WP 8.0 doesn't use it)
+        $mdil = "$tempDir\MDILProjectFiles.xml"
+        if (Test-Path $mdil) { Remove-Item $mdil -Force }
+        # Repack (delete original, create new ZIP)
+        Remove-Item $XapPath -Force
+        [System.IO.Compression.ZipFile]::CreateFromDirectory($tempDir, $XapPath)
+        Write-Host "  Patched successfully" -ForegroundColor Green
+    } finally {
+        Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
 # --- Build ---
 Write-Host "=== Building WebRadioFM (Silverlight-less) ===" -ForegroundColor Cyan
 Write-Host "Configuration: $Configuration" -ForegroundColor Gray
@@ -208,6 +244,7 @@ foreach ($Platform in $Platforms) {
         New-Item -ItemType Directory -Path $PlatformDir -Force | Out-Null
         Copy-Item -LiteralPath $XapSource -Destination "$PlatformDir\$XapName" -Force
         Write-Host "[$Platform] XAP: $PlatformDir\$XapName" -ForegroundColor Green
+        Patch-XAP "$PlatformDir\$XapName"
     } else {
         Write-Host "[$Platform] WARNING: .XAP not found" -ForegroundColor Yellow
     }
