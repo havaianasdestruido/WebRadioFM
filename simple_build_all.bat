@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -File ".\build.ps1" -Platforms x86,x64,ARM
