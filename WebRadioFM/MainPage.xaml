@@ -21,6 +21,7 @@
             <shell:ApplicationBarIconButton x:Name="appBarShuffle" IconUri="/Assets/appbar.shuffle.png" Text="shuffle" Click="Shuffle_Click"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem x:Name="menuSettings" Text="settings" Click="Settings_Click"/>
+                <shell:ApplicationBarMenuItem x:Name="menuStats" Text="scrobble stats" Click="Stats_Click"/>
                 <shell:ApplicationBarMenuItem x:Name="menuNowPlayingInfo" Text="track info" Click="TrackInfo_Click"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
@@ -32,8 +33,6 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-
 
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="WEBRADIO.FM" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
@@ -64,9 +63,18 @@
             <Rectangle Grid.Row="1" Fill="{StaticResource PhoneAccentBrush}" Height="2" Margin="0,6,0,6"/>
 
             <StackPanel Grid.Row="2" Margin="0,0,0,6">
-                <TextBlock x:Name="nowPlayingTitle" Text="No track selected" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="NoWrap"/>
-                <TextBlock x:Name="nowPlayingArtist" Text="" Style="{StaticResource PhoneTextLargeStyle}" TextWrapping="NoWrap"/>
-                <TextBlock x:Name="nowPlayingAlbum" Text="" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="NoWrap"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock x:Name="nowPlayingTitle" Text="No track selected" Style="{StaticResource PhoneTextTitle2Style}" TextWrapping="NoWrap"/>
+                        <TextBlock x:Name="nowPlayingArtist" Text="" Style="{StaticResource PhoneTextLargeStyle}" TextWrapping="NoWrap"/>
+                        <TextBlock x:Name="nowPlayingAlbum" Text="" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="NoWrap"/>
+                    </StackPanel>
+                    <Button x:Name="loveButton" Grid.Column="1" Content="♥" FontSize="36" Foreground="{StaticResource PhoneSubtleBrush}" Click="LoveButton_Click" Width="64" Height="64" Margin="6,0,0,0"/>
+                </Grid>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Margin="0,0,0,24">

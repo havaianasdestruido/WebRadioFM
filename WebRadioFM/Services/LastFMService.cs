@@ -293,6 +293,181 @@ namespace WebRadioFM.Services
             }, errorCallback);
         }
 
+        public void GetRecentTracksAsync(string username, int limit, Action<List<RecentTrackItem>> callback, Action<string> errorCallback)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "user.getRecentTracks" },
+                { "api_key", _apiKey },
+                { "user", username },
+                { "limit", limit.ToString() }
+            };
+
+            string url = BuildRequestUrl(parameters);
+            MakeRequest(url, "GET", null, (json) =>
+            {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
+                try
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(RecentTracksResponse));
+                    using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var response = serializer.ReadObject(ms) as RecentTracksResponse;
+                        if (response != null && response.recenttracks != null)
+                        {
+                            if (callback != null)
+                                callback(response.recenttracks.track ?? new List<RecentTrackItem>());
+                            return;
+                        }
+                    }
+                }
+                catch { }
+
+                if (errorCallback != null)
+                    errorCallback("Failed to parse recent tracks");
+            }, errorCallback);
+        }
+
+        public void GetTopArtistsAsync(string username, int limit, string period, Action<List<TopArtistItem>> callback, Action<string> errorCallback)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "user.getTopArtists" },
+                { "api_key", _apiKey },
+                { "user", username },
+                { "limit", limit.ToString() },
+                { "period", period }
+            };
+
+            string url = BuildRequestUrl(parameters);
+            MakeRequest(url, "GET", null, (json) =>
+            {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
+                try
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(TopArtistsResponse));
+                    using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var response = serializer.ReadObject(ms) as TopArtistsResponse;
+                        if (response != null && response.topartists != null)
+                        {
+                            if (callback != null)
+                                callback(response.topartists.artist ?? new List<TopArtistItem>());
+                            return;
+                        }
+                    }
+                }
+                catch { }
+
+                if (errorCallback != null)
+                    errorCallback("Failed to parse top artists");
+            }, errorCallback);
+        }
+
+        public void GetTopTracksAsync(string username, int limit, string period, Action<List<TopTrackItem>> callback, Action<string> errorCallback)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "user.getTopTracks" },
+                { "api_key", _apiKey },
+                { "user", username },
+                { "limit", limit.ToString() },
+                { "period", period }
+            };
+
+            string url = BuildRequestUrl(parameters);
+            MakeRequest(url, "GET", null, (json) =>
+            {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
+                try
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(TopTracksResponse));
+                    using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var response = serializer.ReadObject(ms) as TopTracksResponse;
+                        if (response != null && response.toptracks != null)
+                        {
+                            if (callback != null)
+                                callback(response.toptracks.track ?? new List<TopTrackItem>());
+                            return;
+                        }
+                    }
+                }
+                catch { }
+
+                if (errorCallback != null)
+                    errorCallback("Failed to parse top tracks");
+            }, errorCallback);
+        }
+
+        public void GetTrackInfoAsync(string artist, string track, Action<TrackInfoData> callback, Action<string> errorCallback)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "track.getInfo" },
+                { "api_key", _apiKey },
+                { "artist", artist },
+                { "track", track }
+            };
+
+            if (!string.IsNullOrEmpty(_session.Username))
+            {
+                parameters.Add("username", _session.Username);
+            }
+
+            string url = BuildRequestUrl(parameters);
+            MakeRequest(url, "GET", null, (json) =>
+            {
+                string errorMsg = GetErrorFromJson(json);
+                if (errorMsg != null)
+                {
+                    if (errorCallback != null)
+                        errorCallback(errorMsg);
+                    return;
+                }
+
+                try
+                {
+                    var serializer = new DataContractJsonSerializer(typeof(TrackInfoResponse));
+                    using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    {
+                        var response = serializer.ReadObject(ms) as TrackInfoResponse;
+                        if (response != null && response.track != null)
+                        {
+                            if (callback != null)
+                                callback(response.track);
+                            return;
+                        }
+                    }
+                }
+                catch { }
+
+                if (errorCallback != null)
+                    errorCallback("Failed to parse track info");
+            }, errorCallback);
+        }
+
         public void LoadSession()
         {
             try

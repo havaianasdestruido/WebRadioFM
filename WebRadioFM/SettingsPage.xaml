@@ -4,9 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -24,52 +21,132 @@
             <TextBlock Text="settings" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" Margin="12,0,12,0">
-            <StackPanel>
+        <Pivot Grid.Row="1" Title="">
+            <PivotItem Header="scrobbling">
+                <ScrollViewer>
+                    <StackPanel Margin="12,0,12,0">
 
-                <TextBlock Text="Last.fm Scrobbling" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,12"/>
+                        <TextBlock Text="Accounts" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <StackPanel x:Name="accountPanel">
+                            <TextBlock x:Name="authStatusText" Text="Not connected" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" Margin="0,0,0,6"/>
+                            <TextBox x:Name="apiKeyTextBox" InputScope="Url" PlaceholderText="API Key"/>
+                            <PasswordBox x:Name="apiSecretPasswordBox"/>
+                            <TextBox x:Name="tokenTextBox" InputScope="Url" PlaceholderText="Paste token after authorizing"/>
+                            <Grid Margin="0,6,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Content="get token" Click="GetToken_Click" Grid.Column="0" Margin="0,0,3,0"/>
+                                <Button Content="authorize" Click="Authorize_Click" Grid.Column="1" Margin="3,0,3,0" IsEnabled="False"/>
+                                <Button Content="connect" Click="Connect_Click" Grid.Column="2" Margin="3,0,0,0" IsEnabled="False"/>
+                            </Grid>
+                            <Button x:Name="logoutButton" Content="disconnect" Click="Logout_Click"/>
+                        </StackPanel>
 
-                <TextBlock x:Name="authStatusText" Text="Not connected" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" Margin="0,0,0,12"/>
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,6"/>
 
-                <TextBlock Text="API Key" Style="{StaticResource PhoneTextNormalStyle}"/>
-                <TextBox x:Name="apiKeyTextBox" InputScope="Url" PlaceholderText="Enter your Last.fm API key"/>
+                        <TextBlock Text="Scrobble Rules" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+                            <TextBlock Text="Scrobble enabled" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="scrobbleEnabledCheck" Checked="ScrobbleEnabledChanged" Unchecked="ScrobbleEnabledChanged" Margin="12,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+                            <TextBlock Text="Submit Now Playing" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="nowPlayingCheck" Checked="NowPlayingChanged" Unchecked="NowPlayingChanged" Margin="12,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+                            <TextBlock Text="Love on startup" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="loveOnStartupCheck" Checked="LoveOnStartupChanged" Unchecked="LoveOnStartupChanged" Margin="12,0,0,0"/>
+                        </StackPanel>
 
-                <TextBlock Text="API Secret" Style="{StaticResource PhoneTextNormalStyle}"/>
-                <PasswordBox x:Name="apiSecretPasswordBox"/>
+                        <TextBlock Text="Scrobble delay (seconds)" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,12,0,0"/>
+                        <TextBlock x:Name="delaySecsValue" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}"/>
+                        <Slider x:Name="delaySecsSlider" Minimum="30" Maximum="360" Value="180" ValueChanged="DelaySecsChanged" Margin="0,6,0,6"/>
 
-                <TextBlock Text="Token" Style="{StaticResource PhoneTextNormalStyle}"/>
-                <TextBox x:Name="tokenTextBox" InputScope="Url" PlaceholderText="Paste token from Last.fm"/>
+                        <TextBlock Text="Scrobble delay (% of track)" Style="{StaticResource PhoneTextNormalStyle}"/>
+                        <TextBlock x:Name="delayPercentValue" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}"/>
+                        <Slider x:Name="delayPercentSlider" Minimum="30" Maximum="95" Value="50" ValueChanged="DelayPercentChanged" Margin="0,6,0,6"/>
 
-                <Grid Margin="0,12,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="getTokenButton" Content="1. Get Token" Click="GetToken_Click" Grid.Column="0" Margin="0,0,6,0"/>
-                    <Button x:Name="authButton" Content="2. Authorize" Click="Authorize_Click" Grid.Column="1" Margin="6,0,0,0" IsEnabled="False"/>
-                </Grid>
+                        <TextBlock Text="Minimum track duration (seconds)" Style="{StaticResource PhoneTextNormalStyle}"/>
+                        <TextBlock x:Name="minDurationValue" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}"/>
+                        <Slider x:Name="minDurationSlider" Minimum="10" Maximum="60" Value="30" ValueChanged="MinDurationChanged" Margin="0,6,0,12"/>
 
-                <Button x:Name="connectButton" Content="3. Connect" Click="Connect_Click" IsEnabled="False"/>
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
 
-                <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,12"/>
+                        <TextBlock Text="Metadata" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+                            <TextBlock Text="Fetch album art from Last.fm" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="fetchAlbumArtCheck" Checked="FetchAlbumArtChanged" Unchecked="FetchAlbumArtChanged" Margin="12,0,0,0"/>
+                        </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,6,0,12">
-                    <TextBlock Text="Enable scrobbling" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
-                    <CheckBox x:Name="scrobblingCheckBox" Checked="ScrobblingCheckChanged" Unchecked="ScrobblingCheckChanged" Margin="12,0,0,0"/>
-                </StackPanel>
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,6"/>
 
-                <Button x:Name="logoutButton" Content="Disconnect" Click="Logout_Click"/>
+                        <TextBlock Text="Blocked Metadata" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <TextBlock Text="Tracks matching these strings won't scrobble" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
+                        <TextBox x:Name="blockedTracksBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="One per line: artist - track"/>
+                        <Button Content="save blocked" Click="SaveBlocked_Click" Margin="0,6,0,12"/>
 
-                <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,12"/>
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
 
-                <TextBlock Text="About" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,12"/>
-                <TextBlock Text="WebRadio.FM v1.0" Style="{StaticResource PhoneTextNormalStyle}"/>
-                <TextBlock Text="Windows Phone 8.1 music player with Last.fm scrobbling integration." Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap" Margin="0,6,0,12"/>
-                <TextBlock Text="How to connect:" Style="{StaticResource PhoneTextLargeStyle}" Margin="0,6,0,6"/>
-                <TextBlock Text="1. Get a Last.fm API key at https://www.last.fm/api/account/create&#x0a;2. Enter your API key and secret&#x0a;3. Tap 'Get Token' to get a request token&#x0a;4. Tap 'Authorize' to open the browser and authorize the app&#x0a;5. Copy the token from step 3, paste it into the Token field&#x0a;6. Tap 'Connect' to complete authentication" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
+                        <TextBlock Text="Metadata Edits" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <TextBlock Text="Simple find/replace (field:pattern:replacement)" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
+                        <TextBox x:Name="simpleEditsBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="title:(feat.)-(feat.)&#x0a;artist:The - The"/>
+                        <Button Content="save edits" Click="SaveEdits_Click" Margin="0,6,0,12"/>
 
-            </StackPanel>
-        </ScrollViewer>
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
+
+                        <TextBlock Text="Regex Rules" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <TextBlock Text="Regex replacement (field:pattern:replacement)" Style="{StaticResource PhoneTextSubtleStyle}" TextWrapping="Wrap"/>
+                        <TextBox x:Name="regexRulesBox" AcceptsReturn="True" TextWrapping="Wrap" Height="100" PlaceholderText="all:\s*-\s*: - "/>
+                        <Button Content="save regex" Click="SaveRegex_Click" Margin="0,6,0,12"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+
+            <PivotItem Header="appearance">
+                <ScrollViewer>
+                    <StackPanel Margin="12,0,12,0">
+
+                        <TextBlock Text="Theme" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,6"/>
+                        <ListBox x:Name="themeListBox" SelectionChanged="ThemeSelectionChanged" Margin="0,0,0,12">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Style="{StaticResource PhoneTextLargeStyle}" Margin="0,6,0,6"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,12">
+                            <TextBlock Text="Dark mode" Style="{StaticResource PhoneTextLargeStyle}" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="darkModeCheck" Checked="DarkModeChanged" Unchecked="DarkModeChanged" Margin="12,0,0,0"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+
+            <PivotItem Header="about">
+                <ScrollViewer>
+                    <StackPanel Margin="12,0,12,0">
+                        <TextBlock Text="WebRadio.FM" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,12,0,6"/>
+                        <TextBlock Text="Version 1.0" Style="{StaticResource PhoneTextLargeStyle}"/>
+                        <TextBlock Text="Windows Phone 8.1 music player with Last.fm scrobbling" Style="{StaticResource PhoneTextNormalStyle}" TextWrapping="Wrap" Margin="0,6,0,12"/>
+
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,6,0,6"/>
+
+                        <TextBlock Text="How to connect to Last.fm:" Style="{StaticResource PhoneTextTitle2Style}" Margin="0,6,0,12"/>
+                        <TextBlock Text="1. Get a Last.fm API key at last.fm/api/account/create&#x0a;2. Enter API key and secret in Settings > Scrobbling&#x0a;3. Tap 'get token' to request a token&#x0a;4. Tap 'authorize' to open last.fm in browser&#x0a;5. Authorize the app, then copy the token&#x0a;6. Paste token into the field&#x0a;7. Tap 'connect' to finish&#x0a;&#x0a;Your session is saved for future use." Style="{StaticResource PhoneTextNormalStyle}" TextWrapping="Wrap"/>
+
+                        <Rectangle Fill="{StaticResource PhoneAccentBrush}" Height="1" Margin="0,12,0,6"/>
+
+                        <Button Content="visit stats page" Click="Stats_Click" Margin="0,6,0,12"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+        </Pivot>
     </Grid>
 
 </phone:PhoneApplicationPage>

@@ -1,11 +1,11 @@
 using System;
 using System.Diagnostics;
-using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using WebRadioFM.Helpers;
 using WebRadioFM.Resources;
 using WebRadioFM.Services;
 
@@ -23,8 +23,12 @@ namespace WebRadioFM
 
             InitializeComponent();
 
+            SettingsManager.UpgradeSettings();
+
             LastFm = new LastFMService();
             LastFm.LoadSession();
+
+            ThemeManager.ApplyTheme();
 
             InitializePhoneApplication();
 

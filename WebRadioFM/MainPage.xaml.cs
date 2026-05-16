@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using WebRadioFM.Helpers;
 using WebRadioFM.Models;
 using WebRadioFM.Services;
 
@@ -17,6 +18,7 @@ namespace WebRadioFM
         private Track _currentScrobbledTrack;
         private DateTime _playStartTime;
         private bool _scrobblePending;
+        private bool _isLoved;
 
         public MainPage()
         {
@@ -107,6 +109,11 @@ namespace WebRadioFM
             NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
         }
 
+        private void Stats_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/StatsPage.xaml", UriKind.Relative));
+        }
+
         private void TrackInfo_Click(object sender, EventArgs e)
         {
             if (_player.CurrentTrack != null)
@@ -119,6 +126,39 @@ namespace WebRadioFM
                         _player.CurrentTrack.Duration),
                     "Track Info", MessageBoxButton.OK);
             }
+        }
+
+        private void LoveButton_Click(object sender, EventArgs e)
+        {
+            if (_player.CurrentTrack == null || !App.LastFm.IsAuthenticated)
+                return;
+
+            _isLoved = !_isLoved;
+            UpdateLoveButton();
+
+            if (_isLoved)
+            {
+                App.LastFm.LoveTrackAsync(
+                    _player.CurrentTrack.Artist,
+                    _player.CurrentTrack.Title,
+                    () => { },
+                    (error) => { });
+            }
+            else
+            {
+                App.LastFm.UnloveTrackAsync(
+                    _player.CurrentTrack.Artist,
+                    _player.CurrentTrack.Title,
+                    () => { },
+                    (error) => { });
+            }
+        }
+
+        private void UpdateLoveButton()
+        {
+            loveButton.Foreground = _isLoved
+                ? Application.Current.Resources["PhoneAccentBrush"] as System.Windows.Media.Brush
+                : Application.Current.Resources["PhoneSubtleBrush"] as System.Windows.Media.Brush;
         }
 
         private void ProgressTimerTick(object sender, EventArgs e)
@@ -139,9 +179,13 @@ namespace WebRadioFM
 
         private void OnTrackChanged(Track track)
         {
-            nowPlayingTitle.Text = track.Title;
-            nowPlayingArtist.Text = track.Artist;
-            nowPlayingAlbum.Text = track.Album;
+            string title = SettingsManager.ApplyEdits(track.Title, "title");
+            string artist = SettingsManager.ApplyEdits(track.Artist, "artist");
+            string album = SettingsManager.ApplyEdits(track.Album, "album");
+
+            nowPlayingTitle.Text = title;
+            nowPlayingArtist.Text = artist;
+            nowPlayingAlbum.Text = album;
 
             totalDurationText.Text = string.Format("{0:mm\\:ss}", track.Duration);
 
@@ -152,6 +196,16 @@ namespace WebRadioFM
             _scrobblePending = false;
             _playStartTime = DateTime.Now;
 
+            _isLoved = false;
+            UpdateLoveButton();
+
+            if (SettingsManager.LoveOnStartup && App.LastFm.IsAuthenticated)
+            {
+                _isLoved = true;
+                UpdateLoveButton();
+                App.LastFm.LoveTrackAsync(artist, title, () => { }, (error) => { });
+            }
+
             if (!_progressTimer.IsEnabled)
             {
                 _progressTimer.Start();
@@ -160,6 +214,13 @@ namespace WebRadioFM
             SendNowPlaying(track);
 
             UpdateScrobbleStatus();
+
+            if (SettingsManager.FetchAlbumArt && App.LastFm.IsAuthenticated)
+            {
+                App.LastFm.GetTrackInfoAsync(artist, title,
+                    (info) => { },
+                    (error) => { });
+            }
         }
 
         private void OnPlayStateChanged(bool isPlaying)
@@ -177,22 +238,15 @@ namespace WebRadioFM
 
         private void SendNowPlaying(Track track)
         {
-            if (!App.LastFm.IsAuthenticated)
+            if (!App.LastFm.IsAuthenticated || !SettingsManager.NowPlayingEnabled || !SettingsManager.ScrobblerEnabled)
                 return;
 
-            bool scrobblingEnabled = false;
-            if (IsolatedStorageSettings.ApplicationSettings.Contains("LastFmScrobblingEnabled"))
-            {
-                scrobblingEnabled = (bool)IsolatedStorageSettings.ApplicationSettings["LastFmScrobblingEnabled"];
-            }
-
-            if (!scrobblingEnabled)
-                return;
+            string artist = SettingsManager.ApplyEdits(track.Artist, "artist");
+            string title = SettingsManager.ApplyEdits(track.Title, "title");
+            string album = SettingsManager.ApplyEdits(track.Album, "album");
 
             App.LastFm.UpdateNowPlayingAsync(
-                track.Artist,
-                track.Title,
-                track.Album,
+                artist, title, album,
                 (int)track.Duration.TotalSeconds,
                 () =>
                 {
@@ -215,13 +269,7 @@ namespace WebRadioFM
             if (!App.LastFm.IsAuthenticated || _player.CurrentTrack == null)
                 return;
 
-            bool scrobblingEnabled = false;
-            if (IsolatedStorageSettings.ApplicationSettings.Contains("LastFmScrobblingEnabled"))
-            {
-                scrobblingEnabled = (bool)IsolatedStorageSettings.ApplicationSettings["LastFmScrobblingEnabled"];
-            }
-
-            if (!scrobblingEnabled)
+            if (!SettingsManager.ScrobblerEnabled)
                 return;
 
             if (_scrobblePending)
@@ -235,17 +283,32 @@ namespace WebRadioFM
             if (_player.Duration.TotalSeconds <= 0)
                 return;
 
+            if (_player.Duration.TotalSeconds < SettingsManager.MinTrackDuration)
+                return;
+
             double progressPercent = _player.Position.TotalSeconds / _player.Duration.TotalSeconds;
 
-            if (progressPercent >= 0.5 || _player.Position.TotalSeconds >= 240)
+            int delaySecs = Math.Min(SettingsManager.ScrobbleDelaySecs, (int)(_player.Duration.TotalSeconds * SettingsManager.ScrobbleDelayPercent / 100));
+
+            if (progressPercent >= 0.5 || _player.Position.TotalSeconds >= delaySecs)
             {
+                string artist = SettingsManager.ApplyEdits(currentTrack.Artist, "artist");
+                string title = SettingsManager.ApplyEdits(currentTrack.Title, "title");
+                string album = SettingsManager.ApplyEdits(currentTrack.Album, "album");
+
+                if (SettingsManager.IsTrackBlocked(artist, title))
+                {
+                    _scrobblePending = true;
+                    _currentScrobbledTrack = currentTrack;
+                    scrobbleStatusText.Text = "Blocked";
+                    return;
+                }
+
                 _scrobblePending = true;
                 _currentScrobbledTrack = currentTrack;
 
                 App.LastFm.ScrobbleAsync(
-                    currentTrack.Artist,
-                    currentTrack.Title,
-                    currentTrack.Album,
+                    artist, title, album,
                     (int)currentTrack.Duration.TotalSeconds,
                     _playStartTime,
                     () =>
@@ -268,14 +331,13 @@ namespace WebRadioFM
 
         private void UpdateScrobbleStatus()
         {
-            if (App.LastFm.IsAuthenticated)
+            if (App.LastFm.IsAuthenticated && SettingsManager.ScrobblerEnabled)
             {
-                bool enabled = false;
-                if (IsolatedStorageSettings.ApplicationSettings.Contains("LastFmScrobblingEnabled"))
-                {
-                    enabled = (bool)IsolatedStorageSettings.ApplicationSettings["LastFmScrobblingEnabled"];
-                }
-                scrobbleStatusText.Text = enabled ? "Last.fm scrobbling on" : "Last.fm scrobbling off";
+                scrobbleStatusText.Text = SettingsManager.NowPlayingEnabled ? "Last.fm scrobbling on" : "Scrobbling on (no NP)";
+            }
+            else if (App.LastFm.IsAuthenticated)
+            {
+                scrobbleStatusText.Text = "Last.fm scrobbling off";
             }
             else
             {
