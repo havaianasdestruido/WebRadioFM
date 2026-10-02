@@ -16,8 +16,27 @@ A **Windows Phone 8.1 Silverlight** app that plays music from your phone's local
 
 ## Documentation
 
-- [BUILDING.md](BUILDING.md) — build prerequisites and instructions
-- [INSTALLING.md](INSTALLING.md) — deployment and installation guide
+The complete user, contributor, architecture, and API handbook is a [Docusaurus](https://docusaurus.io/) site in [`docs/`](docs/getting-started/overview.md).
+
+```bash
+# Node.js 20+
+npm install
+npm start
+
+# Validate the production site
+npm run build
+```
+
+The development server opens the handbook at `http://localhost:3000/`. Production uses the `/WebRadioFM/` GitHub Pages base path.
+
+Quick references:
+
+- [Getting started](docs/getting-started/overview.md)
+- [Build from source](docs/development/building.md)
+- [Architecture](docs/architecture/overview.md)
+- [API reference](docs/api-reference/overview.md)
+- [BUILDING.md](BUILDING.md) — legacy standalone build notes
+- [INSTALLING.md](INSTALLING.md) — legacy standalone deployment notes
 
 ## Project Structure
 
@@ -34,10 +53,14 @@ WebRadioFM/                    # Main project (WP 8.1 Silverlight)
 ├── Properties/                # Assembly info, manifests
 ├── Resources/                 # Localized strings
 └── Assets/                    # Icons and tile images
-build.ps1                      # Multi-platform build script (x86, x64, ARM)
-simple_build_all.bat           # Batch launcher for build.ps1
+docs/                          # Docusaurus handbook content
+src/                           # Documentation UI and theme styles
+static/                        # Documentation static assets
+package.json                   # Docusaurus scripts and dependencies
+build.ps1                      # Multi-platform application build script
+simple_build_all.bat           # ARM build launcher for build.ps1
 ```
 
 ## License
 
-See `Properties/AssemblyInfo.cs` for assembly metadata.
+WebRadioFM is available under the terms in [LICENSE](LICENSE).

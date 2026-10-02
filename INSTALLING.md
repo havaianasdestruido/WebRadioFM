@@ -1,5 +1,7 @@
 # Installing WebRadioFM
 
+> Full deployment and first-run documentation: [docs/getting-started/install.md](docs/getting-started/install.md)
+
 ## Prerequisites
 
 - A **Windows Phone 8.1** device (or the Windows Phone 8.1 emulator)
@@ -34,12 +36,12 @@ Tools like [Windows Phone Power Tools](https://wptools.codeplex.com/) can sidelo
    - Enter your **Last.fm API Key** and **API Secret**
      (create an API account at https://www.last.fm/api/account/create)
    - Tap **Get Token**, then **Authorize** — you'll be taken to last.fm in the browser
-   - After authorizing, copy the returned token and paste it back in the app
+   - After authorizing, return to the app and confirm the generated token remains in the token field
    - Tap **Connect** to exchange the token for a session key
 4. Adjust scrobble rules (delays, minimum duration, etc.) to your preference
 5. Customize the appearance under the **Appearance** pivot
 
-Your session is persisted, so you only need to authenticate once.
+The session key and username are persisted. The current implementation does **not** persist the API key or secret, so enter them again after a cold process launch before using signed Last.fm features.
 
 ## Troubleshooting
 

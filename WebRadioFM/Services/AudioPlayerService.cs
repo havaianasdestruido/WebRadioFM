@@ -10,6 +10,7 @@ namespace WebRadioFM.Services
     public class AudioPlayerService : IDisposable
     {
         private List<Track> _playlist;
+        private List<Song> _songs;
         private int _currentIndex;
         private bool _isShuffled;
         private Random _random;
@@ -66,6 +67,7 @@ namespace WebRadioFM.Services
         public AudioPlayerService()
         {
             _playlist = new List<Track>();
+            _songs = new List<Song>();
             _currentIndex = -1;
             _isShuffled = false;
             _random = new Random();
@@ -79,6 +81,7 @@ namespace WebRadioFM.Services
         public void LoadSongsFromMusicLibrary()
         {
             _playlist.Clear();
+            _songs.Clear();
             _currentIndex = -1;
 
             var songs = _mediaLibrary.Songs;
@@ -131,6 +134,7 @@ namespace WebRadioFM.Services
                     catch { }
 
                     _playlist.Add(track);
+                    _songs.Add(song);
                 }
             }
 
@@ -147,17 +151,17 @@ namespace WebRadioFM.Services
                 _currentIndex = index;
             }
 
-            if (_currentIndex < 0 || _currentIndex >= _playlist.Count)
+            if (_currentIndex < 0 || _currentIndex >= _playlist.Count || _currentIndex >= _songs.Count)
                 return;
 
-            if (_playlist[_currentIndex] == null)
+            if (_playlist[_currentIndex] == null || _songs[_currentIndex] == null)
                 return;
 
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
                 try
                 {
-                    var song = _mediaLibrary.Songs[_currentIndex];
+                    var song = _songs[_currentIndex];
                     MediaPlayer.Play(song);
                     _isPlaying = true;
 
@@ -254,9 +258,9 @@ namespace WebRadioFM.Services
             try
             {
                 int songIndex = -1;
-                for (int i = 0; i < _mediaLibrary.Songs.Count; i++)
+                for (int i = 0; i < _songs.Count; i++)
                 {
-                    if (_mediaLibrary.Songs[i] == MediaPlayer.Queue.ActiveSong)
+                    if (_songs[i] == MediaPlayer.Queue.ActiveSong)
                     {
                         songIndex = i;
                         break;

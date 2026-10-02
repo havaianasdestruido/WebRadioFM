@@ -1,5 +1,7 @@
 # Building WebRadioFM
 
+> Full build, compatibility, script, output, and troubleshooting documentation: [docs/development/building.md](docs/development/building.md)
+
 ## Prerequisites
 
 - **Visual Studio 2013** (or later) with the **Windows Phone 8.1 SDK**
@@ -14,8 +16,11 @@
 ### Using the build script
 
 ```powershell
-# Build all platforms (x86, x64, ARM) in Release
+# Build the script defaults (x86 and x64) in Release
 .\build.ps1
+
+# Build ARM explicitly for a physical phone
+.\build.ps1 -Configuration Release -Platforms ARM
 
 # Build specific configuration and platforms
 .\build.ps1 -Configuration Debug -Platforms x86,ARM

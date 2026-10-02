@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f6f1e7"/>
+  <circle cx="1035" cy="100" r="240" fill="#41d7c7" opacity=".18"/>
+  <circle cx="1050" cy="570" r="300" fill="#ff5c87" opacity=".16"/>
+  <rect x="88" y="92" width="112" height="112" rx="28" fill="#152338"/>
+  <path d="M105 151h13l8-27 14 55 15-69 14 58 11-34 6 17h9" fill="none" stroke="#ff5c87" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="88" y="300" fill="#152338" font-family="Arial, sans-serif" font-size="92" font-weight="800">WebRadioFM</text>
+  <text x="91" y="375" fill="#40516b" font-family="Arial, sans-serif" font-size="38">The complete project handbook</text>
+  <rect x="91" y="430" width="720" height="5" rx="2.5" fill="#ff5c87"/>
+  <text x="91" y="500" fill="#40516b" font-family="monospace" font-size="26">Windows Phone 8.1 · XNA audio · Last.fm</text>
+</svg>
