@@ -91,6 +91,6 @@ The UI is optimistic: request errors are ignored by the page, and love state is 
 
 `AudioPlayerService` follows the static XNA `MediaPlayer` and listens for `ActiveSongChanged`. The service declares a `PlaylistEnded` event but the current implementation never raises it. Queue progression therefore depends on `MediaPlayer` behavior rather than an application-level end handler.
 
-## Known ordering caveat
+## Playlist ordering and playback mapping
 
-The visible `Track` list is sorted after it is copied, but `Play(index)` fetches `_mediaLibrary.Songs[index]` from the original media-library collection. If the original collection order differs from the sorted list, tapping a row can play a different underlying song than the metadata shown. This is an implementation issue to account for when debugging. See [Audio architecture](../architecture/audio-playback.md).
+The visible `Track` list is sorted by artist and title. During that same sorted enumeration, `AudioPlayerService` stores each original XNA `Song` at the matching index in a private mapping. `Play(index)` uses the mapped song, and active-song events resolve against the same mapping, so playback, displayed metadata, and scrobbling remain aligned when the media library's original order differs. See [Audio architecture](../architecture/audio-playback.md).

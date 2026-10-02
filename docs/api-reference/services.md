@@ -36,8 +36,8 @@ Adapts XNA local music APIs to an event-based page service.
 | Signature | Behavior |
 |---|---|
 | `AudioPlayerService()` | Initializes fields/library and subscribes static XNA events |
-| `void LoadSongsFromMusicLibrary()` | Rebuilds sorted copied playlist and sets index 0 when non-empty |
-| `void Play(int index = -1)` | Optionally selects valid index; dispatches XNA play and service events |
+| `void LoadSongsFromMusicLibrary()` | Rebuilds the sorted copied playlist and aligned XNA song map; sets index 0 when non-empty |
+| `void Play(int index = -1)` | Optionally selects a valid mapped index; dispatches XNA play and service events |
 | `void Pause()` | Pauses XNA and publishes false |
 | `void Resume()` | Resumes XNA and publishes true |
 | `void Stop()` | Stops XNA and publishes false |
@@ -50,7 +50,7 @@ Adapts XNA local music APIs to an event-based page service.
 ### Private handlers
 
 - `OnMediaStateChanged` mirrors `MediaPlayer.State == MediaState.Playing`, then publishes state and progress.
-- `OnActiveSongChanged` searches source songs by identity, sets corresponding integer index, and publishes track/state; exceptions are ignored.
+- `OnActiveSongChanged` searches the aligned song map by identity, sets the corresponding shared index, and publishes track/state; exceptions are ignored.
 
 `Play` catches playback exceptions and presents `MessageBox.Show`.
 

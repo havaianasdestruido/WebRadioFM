@@ -55,7 +55,7 @@ The status changes to **Connected as _username_**.
 The API key and shared secret are fields on the in-memory service and are **not saved**. After process recreation, `App` loads the session but leaves `ApiKey` and `ApiSecret` empty. Re-enter credentials before calls that require API signing.
 
 :::danger Transport security
-The source uses `http://ws.audioscrobbler.com/2.0/` and `http://www.last.fm/api/auth/`. Requests can contain a session key and API signature. Avoid untrusted networks and consider migrating both constants to supported HTTPS endpoints before using real credentials.
+The source uses `http://ws.audioscrobbler.com/2.0/` and `http://www.last.fm/api/auth/`. Requests can contain a session key and API signature. Avoid untrusted networks when using real credentials. These documented URLs are HTTP; this guide does not assert that an HTTPS URL is a compatible drop-in replacement for this legacy client.
 :::
 
 ## Disconnect

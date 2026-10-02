@@ -80,7 +80,7 @@ npm ci
 npm run build
 ```
 
-The GitHub Actions Documentation workflow builds pull requests and deploys `main` documentation through GitHub Pages when repository Pages is configured for GitHub Actions.
+The GitHub Actions Documentation workflow builds pull requests without deploying them. Pushes to `main` deploy the `main` documentation, while manual runs deploy the branch or tag selected for the dispatch. Deployment requires repository Pages to be configured for GitHub Actions.
 
 ## 7. Publish
 

@@ -37,7 +37,7 @@ The XNA `MediaLibrary.Songs` collection is empty or unavailable. Add local music
 
 ### Tapping one row plays another song
 
-The visible playlist is sorted, while playback indexes the original `MediaLibrary.Songs` collection. If orders differ, indexes no longer correspond. See the [known ordering caveat](./playback.md#known-ordering-caveat).
+The current service stores each sorted `Track` with a parallel XNA `Song` mapping. Confirm the deployed package includes that mapping and that no caller has added, removed, or reordered entries through the mutable `Playlist` property. See [playlist ordering and playback mapping](./playback.md#playlist-ordering-and-playback-mapping).
 
 ### Progress does not move
 
@@ -119,7 +119,7 @@ The parser uses colon delimiters and splits into at most three fields. Redesign 
 
 ### Some text does not update after switching theme
 
-Theme changes replace application resources at runtime. Revisit the page or restart the app. Light mode does not rebuild the text styles that dark mode overrides.
+Theme changes replace application resources at runtime. Restarting the app reloads the initial phone resources before applying light mode. Revisiting a page alone does not restore the text styles that dark mode overrides; fixing the live transition requires `ThemeManager.ApplyTheme()` to restore the light-mode text styles.
 
 ## Collecting useful diagnostics
 

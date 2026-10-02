@@ -11,6 +11,7 @@ description: XNA media adaptation, playlist state, events, and known synchroniza
 
 ```csharp
 private List<Track> _playlist;
+private List<Song> _songs;
 private int _currentIndex;
 private bool _isShuffled;
 private Random _random;
@@ -19,14 +20,14 @@ private MediaLibrary _mediaLibrary;
 private bool _disposed;
 ```
 
-Construction initializes an empty list, index `-1`, shuffle/playing false, and subscribes:
+Construction initializes empty track and song lists, index `-1`, shuffle/playing false, and subscribes:
 
 - `MediaPlayer.MediaStateChanged` → `OnMediaStateChanged`
 - `MediaPlayer.ActiveSongChanged` → `OnActiveSongChanged`
 
 ## Loading tracks
 
-`LoadSongsFromMusicLibrary()` clears state and enumerates songs sorted by artist then name. Each item becomes a new `Track` with defensive property reads.
+`LoadSongsFromMusicLibrary()` clears state and enumerates songs sorted by artist then name. Each item becomes a new `Track` with defensive property reads, while the corresponding XNA `Song` is appended to `_songs` at the same index.
 
 The method contains a reflection-based attempt to access album art:
 
@@ -80,31 +81,21 @@ Events are nullable `Action` delegates, invoked after null checks.
 
 ### Active-song synchronization
 
-`OnActiveSongChanged` linearly searches `_mediaLibrary.Songs` by object identity against `MediaPlayer.Queue.ActiveSong`. If found and within playlist bounds, it assigns that media-library index to `_currentIndex` and raises events.
+`OnActiveSongChanged` linearly searches the explicitly mapped `_songs` list by object identity against `MediaPlayer.Queue.ActiveSong`. If found and within playlist bounds, it assigns that mapped index to `_currentIndex` and raises events.
 
-## Sorted-list mismatch
+## Sorted playlist mapping
 
-The copied `_playlist` is sorted, but `Play()` accesses:
-
-```csharp
-var song = _mediaLibrary.Songs[_currentIndex];
-```
-
-That source collection was not reordered. The same integer can identify different logical songs in the two collections.
-
-The active-song handler has the inverse issue: it finds the original media-library index and uses it to read the sorted playlist. Symptoms include incorrect row-to-audio mapping, active metadata, and scrobbles.
-
-### Safer design
-
-Store the original XNA `Song` alongside each `Track`, or keep a parallel tuple/map:
+`LoadSongsFromMusicLibrary()` builds `_playlist` and `_songs` together during the same sorted enumeration. The two lists therefore share one index space:
 
 ```text
-PlaylistEntry
-├── Track display metadata
-└── Song playback identity
+Index
+├── _playlist[index]  copied metadata used by CurrentTrack and scrobbling
+└── _songs[index]     original XNA Song passed to MediaPlayer.Play
 ```
 
-Then play the selected entry's `Song` directly and map active-song identity back to that entry. Avoid coupling two independently ordered collections by index.
+`Play()` uses `_songs[_currentIndex]`, and active-song changes resolve identity against `_songs`. This keeps playback, displayed metadata, and scrobbling aligned even when the original `MediaLibrary.Songs` order differs from the sorted display order.
+
+Both lists are cleared and rebuilt together. `Playlist` exposes the mutable track list, so callers must not add, remove, or reorder its entries independently; current callers only bind it for display.
 
 ## Threading
 

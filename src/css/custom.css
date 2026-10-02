@@ -95,6 +95,11 @@ body {
   color: #fff;
 }
 
+[data-theme='dark'] .button--primary,
+[data-theme='dark'] .button--primary:hover {
+  color: #152338;
+}
+
 .theme-doc-markdown > h1 {
   font-size: clamp(2.35rem, 5vw, 3.5rem);
   letter-spacing: -0.045em;

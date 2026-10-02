@@ -120,7 +120,7 @@ Pauses do not change `_playStartTime`, so the timestamp remains the original tra
 Before making the HTTP request, the page sets `_scrobblePending = true` and marks `_currentScrobbledTrack`.
 
 - **Success:** status becomes **Scrobbled!**; the track remains marked and cannot submit again during that play.
-- **Failure:** status becomes **Scrobble failed** and `_scrobblePending` resets to false. On the next eligible timer tick the same track can retry, because the equality guard sees `_currentScrobbledTrack == currentTrack` first in current code.
+- **Failure:** status becomes **Scrobble failed** and `_scrobblePending` resets to false. The same play is not retried: `CheckScrobble()` assigned `_currentScrobbledTrack` before calling `ScrobbleAsync()`, so the equality guard blocks the next eligible timer tick.
 
 :::warning Current retry caveat
 Although the error handler clears `_scrobblePending`, it does **not** clear `_currentScrobbledTrack`. The earlier equality check prevents an actual retry for that `Track` object. A new track-change event resets the marker.

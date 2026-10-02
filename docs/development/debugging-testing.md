@@ -45,7 +45,7 @@ Test with:
 - pause/resume; and
 - externally triggered XNA active-song changes where possible.
 
-Compare tapped playlist metadata with the song that actually starts to expose the sorted/original-index mismatch.
+Compare tapped playlist metadata with the song that actually starts to verify the explicit sorted track/song mapping remains aligned, including after active-song changes.
 
 ## Scrobble matrix
 

@@ -17,7 +17,7 @@ Public entry point. Sorts pairs by key, excludes keys containing `format`, conca
 
 Private `CreateMd5` UTF-8 encodes input and formats the 16-byte digest. `ComputeMd5` implements RFC-style padding, 512-bit blocks, four rounds, and little-endian output. Private `F`, `G`, `H`, `I`, `RL`, `FF`, `GG`, `HH`, and `II` implement round functions/rotation.
 
-No null checks are performed; null `secret`, parameters, keys, or values can fail.
+No null checks are performed. A null `parameters` dictionary fails during enumeration, and a null key fails when the filter reaches `Key.Contains`. `StringBuilder.Append` treats a null secret or parameter value as an empty string.
 
 ## `SettingsManager` (static)
 
