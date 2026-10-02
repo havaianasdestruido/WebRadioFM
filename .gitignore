@@ -21,7 +21,15 @@ packages/
 *.nupkg
 project.lock.json
 
+# Node / Docusaurus
+node_modules/
+.docusaurus/
+build/
+.cache-loader/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # Project specific
-/docs/
 /assets/
 *.zip

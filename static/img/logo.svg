@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">WebRadioFM logo</title>
+  <desc id="desc">A stylized radio waveform in a rounded square</desc>
+  <rect width="64" height="64" rx="16" fill="#152338"/>
+  <path d="M10 33h7l4-12 7 26 7-34 7 28 5-16 3 8h4" fill="none" stroke="#ff5c87" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="52" cy="14" r="4" fill="#41d7c7"/>
+</svg>

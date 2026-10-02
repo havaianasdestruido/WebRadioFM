@@ -1,0 +1,36 @@
+{
+  "name": "webradiofm-documentation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Docusaurus documentation for the WebRadioFM Windows Phone application",
+  "scripts": {
+    "start": "cross-env DOCUSAURUS_BASE_URL=/ docusaurus start --host 0.0.0.0",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve --host 0.0.0.0",
+    "clear": "docusaurus clear",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "3.10.2",
+    "@mdx-js/react": "^3.1.1",
+    "@mermaid-js/layout-elk": "0.1.9",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "cross-env": "10.1.0"
+  },
+  "engines": {
+    "node": ">=20.0"
+  },
+  "overrides": {
+    "serialize-javascript": "7.1.2"
+  }
+}
